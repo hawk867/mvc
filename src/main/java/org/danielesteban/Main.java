@@ -1,9 +1,16 @@
 package org.danielesteban;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.danielesteban.task.controller.TaskController;
+import org.danielesteban.task.model.TaskRepository;
+import org.danielesteban.task.view.TaskView;
+
+
 public class Main {
     static void main() {
+        TaskRepository taskRepository = new TaskRepository();
+        TaskController taskController = new TaskController(taskRepository);
+        TaskView taskView = new TaskView(taskController);
 
+        taskView.showMenu();
     }
 }
