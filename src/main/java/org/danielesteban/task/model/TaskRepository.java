@@ -10,44 +10,44 @@ import java.util.stream.IntStream;
 public class TaskRepository {
     List<Task> tasks = new ArrayList<>();
 
-    void save(Task task) {
+    public void save(Task task) throws TaskException {
         throwException(task);
         tasks.add(task);
     }
 
-    Task findById(String id) {
+    public Task findById(String id) {
         return tasks.stream()
                 .filter(t -> Objects.equals(t.getId(), id))
                 .findFirst()
                 .orElse(null);
     }
 
-    void remove(String id) {
+    public void remove(String id) {
         Task task = findById(id);
         tasks.remove(task);
     }
 
-    void remove(Task task) {
+    public void remove(Task task) throws TaskException {
         throwException(task);
         if (!tasks.contains(task))
             throw new TaskException("La tarea no existe en la lista");
         tasks.remove(task);
     }
 
-    List<Task> findAll() {
+    public List<Task> findAll() throws TaskException {
         if (tasks.isEmpty())
             throw new TaskException("La lista esta vacía");
         return tasks;
     }
 
-    int findIndexById(String id) {
+    public int findIndexById(String id) {
         return IntStream.range(0, tasks.size())
                 .filter(i -> tasks.get(i).getId().equals(id))
                 .findFirst()
                 .orElse(-1);
     }
 
-    void updateTask(Task updateTask) {
+    public void updateTask(Task updateTask) throws TaskException {
         throwException(updateTask);
         int index = findIndexById(updateTask.getId());
         if (index == -1)
@@ -56,7 +56,7 @@ public class TaskRepository {
         tasks.set(index, updateTask);
     }
 
-    private static void throwException(Task task) {
+    private static void throwException(Task task) throws TaskException {
         if (task == null)
             throw new TaskException("La tarea no puede ser nula");
     }
