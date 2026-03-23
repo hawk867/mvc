@@ -1,18 +1,22 @@
 package org.danielesteban.task.model;
 
 import org.danielesteban.task.esceptions.TaskException;
+import org.danielesteban.task.persistence.TaskPersistence;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class TaskRepository {
-    List<Task> tasks = new ArrayList<>();
+    List<Task> tasks;
+    public TaskRepository() {
+        this.tasks = TaskPersistence.loadTasks();
+    }
 
     public void save(Task task) throws TaskException {
         throwException(task);
         tasks.add(task);
+        TaskPersistence.saveTasks(this.tasks);
     }
 
     public Task findById(String id) {
@@ -25,6 +29,7 @@ public class TaskRepository {
     public void remove(String id) {
         Task task = findById(id);
         tasks.remove(task);
+        TaskPersistence.saveTasks(this.tasks);
     }
 
     public void remove(Task task) throws TaskException {
@@ -54,6 +59,7 @@ public class TaskRepository {
             throw new TaskException("No se encontro la tarea");
 
         tasks.set(index, updateTask);
+        TaskPersistence.saveTasks(this.tasks);
     }
 
     private static void throwException(Task task) throws TaskException {
