@@ -5,6 +5,7 @@ import org.danielesteban.task.persistence.TaskPersistence;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class TaskRepository {
@@ -26,17 +27,30 @@ public class TaskRepository {
                 .orElse(null);
     }
 
+    public List<Task> findCompletedTasks() throws TaskException {
+        return Optional.of(
+                tasks.stream()
+                        .filter(Task::getCompleted)
+                        .toList()
+            )
+            .filter(list -> !list.isEmpty())
+            .orElseThrow(() -> new TaskException("No hay tareas completadas"));
+    }
+
+    public List<Task> findPendingTasks() throws TaskException {
+        return Optional.of(
+                        tasks.stream()
+                                .filter(t -> !t.getCompleted())
+                                .toList()
+                )
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new TaskException("No hay tareas pendientes"));
+    }
+
     public void remove(String id) {
         Task task = findById(id);
         tasks.remove(task);
         TaskPersistence.saveTasks(this.tasks);
-    }
-
-    public void remove(Task task) throws TaskException {
-        throwException(task);
-        if (!tasks.contains(task))
-            throw new TaskException("La tarea no existe en la lista");
-        tasks.remove(task);
     }
 
     public List<Task> findAll() throws TaskException {
@@ -59,6 +73,15 @@ public class TaskRepository {
             throw new TaskException("No se encontro la tarea");
 
         tasks.set(index, updateTask);
+        TaskPersistence.saveTasks(this.tasks);
+    }
+
+    public void updateTaskCompleted(String id, Boolean completed) throws TaskException {
+        int index = findIndexById(id);
+        if (index == -1)
+            throw new TaskException("No se encontro la tarea");
+
+        tasks.get(index).setCompleted(completed);
         TaskPersistence.saveTasks(this.tasks);
     }
 

@@ -4,6 +4,7 @@ import org.danielesteban.task.controller.TaskController;
 import org.danielesteban.task.esceptions.TaskException;
 import org.danielesteban.task.esceptions.TaskValidationException;
 import org.danielesteban.task.model.Task;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Scanner;
 
@@ -23,7 +24,10 @@ public class TaskView {
             System.out.println("2. Eliminar Tarea");
             System.out.println("3. Actualizar Tarea");
             System.out.println("4. Mostar Tareas");
-            System.out.println("5. Salir");
+            System.out.println("5. Actualizar estado de la tarea");
+            System.out.println("6. Mostrar tareas completadas");
+            System.out.println("7. Mostrar tareas pendientes");
+            System.out.println("8. Salir");
             System.out.println("Seleccione una opción");
 
             String option = scanner.nextLine();
@@ -42,6 +46,15 @@ public class TaskView {
                     showTaskView();
                     break;
                 case "5":
+                    updateTaskCompletedView();
+                    break;
+                case "6":
+                    showCompletedTasksView();
+                    break;
+                case "7":
+                    showPendingTasksView();
+                    break;
+                case "8":
                     System.out.println("Saliendo del sistema");
                     return;
                 default:
@@ -93,6 +106,36 @@ public class TaskView {
         }
     }
 
+    public void updateTaskCompletedView() {
+        try {
+            System.out.println("Ingrese el ID de la tarea");
+            String id = scanner.nextLine();
+            Boolean completed = validateCompleted();
+            this.taskController.updateTaskCompleted(id, completed);
+            System.out.println("Estado de la tarea actualizado correctamente");
+        } catch (TaskException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void showCompletedTasksView() {
+        try {
+            System.out.println("Tareas completadas");
+            this.taskController.showCompletedTasks();
+        } catch (TaskValidationException | TaskException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void showPendingTasksView() {
+        try {
+            System.out.println("Tareas pendientes");
+            this.taskController.showPendingTasks();
+        } catch (TaskValidationException | TaskException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
     private Task getTaskInput() {
 
         String id;
@@ -118,6 +161,11 @@ public class TaskView {
                 System.out.println("La descripción no puede estar vacía");
         } while (description.isBlank());
 
+        Boolean completed = validateCompleted();
+        return new Task(id, title, description, completed);
+    }
+
+    private @NonNull Boolean validateCompleted() {
         Boolean completed = null;
         while (completed == null) {
             System.out.println("Esta completada la tarea? true / false");
@@ -129,6 +177,6 @@ public class TaskView {
             else
                 System.out.println("El valor ingresado no es valido, ingrese 'true' o 'false'");
         }
-        return new Task(id, title, description, completed);
+        return completed;
     }
 }

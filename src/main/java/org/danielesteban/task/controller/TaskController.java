@@ -37,12 +37,30 @@ public class TaskController {
         tasks.forEach(System.out::println);
     }
 
+    public void showCompletedTasks() throws TaskValidationException, TaskException {
+        List<Task> tasks = this.taskRepository.findCompletedTasks();
+        if (tasks.isEmpty())
+            throw new TaskValidationException("La lista no puede estar vacía");
+        tasks.forEach(System.out::println);
+    }
+
+    public void showPendingTasks() throws TaskValidationException, TaskException {
+        List<Task> tasks = this.taskRepository.findPendingTasks();
+        if (tasks.isEmpty())
+            throw new TaskValidationException("La lista no puede estar vacía");
+        tasks.forEach(System.out::println);
+    }
+
     public void updateTask(String id, String title, String description, Boolean completed)
             throws TaskValidationException, TaskException {
 
         validateTaskData(id, title, description, completed);
         Task updateTask = new Task(id, title, description, completed);
         this.taskRepository.updateTask(updateTask);
+    }
+
+    public void updateTaskCompleted(String id, Boolean completed) throws TaskException {
+        this.taskRepository.updateTaskCompleted(id, completed);
     }
 
     private void validateTaskData(String id, String title, String description, Boolean completed)
